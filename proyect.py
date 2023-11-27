@@ -4,7 +4,7 @@ from tkinter import messagebox
 from pymongo import MongoClient
 from time import strftime
 
-ser = serial.Serial('COM4', 9600)
+ser = serial.serial('COM4', 9600)
 # Conexion
 client = MongoClient("mongodb://root12023:root2023@localhost:27017/?authMechanism=DEFAULT&authSource=admin")
 db = client["Arduino"]
