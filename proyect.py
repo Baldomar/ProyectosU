@@ -4,6 +4,7 @@ from tkinter import messagebox
 from pymongo import MongoClient
 from time import strftime
 from PIL import Image, ImageTk
+from reportlab.pdfgen import canvas
 
 ser = serial.Serial('COM4', 9600)
 client = MongoClient("mongodb://Jeison:root2023@localhost:27017/?authMechanism=DEFAULT")
@@ -35,7 +36,22 @@ def Guardar_Datos():
 def buscar_Datos():
     resultados.delete(0, tk.END)
     for doc in collection.find():
-        resultados.insert(tk.END, f"Datos: {doc['Datos']},Fecha: {doc['Fecha']},Hora: {doc['Hora']}")
+        resultados.insert(tk.END, f"Datos: {doc['Datos']}, Fecha: {doc['Fecha']}, Hora: {doc['Hora']}")
+
+def generar_PDF():
+    pdf_filename = "Datos_Sensores.pdf"
+    c = canvas.Canvas(pdf_filename)
+    
+    c.drawString(100, 800, "Datos Recopilados:")
+    
+    y_position = 780
+    for doc in collection.find():
+        data_str = f"Datos: {doc['Datos']}, Fecha: {doc['Fecha']}, Hora: {doc['Hora']}"
+        c.drawString(100, y_position, data_str)
+        y_position -= 20
+    
+    c.save()
+    messagebox.showinfo("Genial", f"PDF generado: {pdf_filename}")
 
 # Diseño de Ventana
 root = tk.Tk()
@@ -73,6 +89,9 @@ insertar_button.place(x=350, y=300)
 
 buscar_button = tk.Button(root, text="Consultar", command=buscar_Datos, bg="#07FBEF", font=("Arial Black", 11))
 buscar_button.place(x=200, y=300)
+
+generar_pdf_button = tk.Button(root, text="Generar PDF", command=generar_PDF, bg="#FFD700", font=("Arial Black", 11))
+generar_pdf_button.place(x=500, y=300)
 
 resultados = tk.Listbox(root, width=70, height=10, font=("Arial Black", 10), fg="black")
 resultados.place(x=100, y=400)
